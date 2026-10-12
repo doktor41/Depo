@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bez Çanta · Stok ve Sipariş</title>
+<style>
+:root{--ink:#1c2a3e;--indigo:#1f3a5f;--bg:#f2f4f7;--card:#fff;--line:#d9dee6;--thread:#e0a526;--ok:#2e7d4f;--mut:#6b7686;--bad:#b3392f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Segoe UI",system-ui,sans-serif}
+header{background:var(--indigo);color:#fff;padding:12px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-bottom:4px solid var(--thread)}
+header h1{font-size:18px;margin:0;flex:1;min-width:160px}
+header select,header button{font:inherit;padding:6px 10px;border-radius:6px;border:0}
+header button{background:var(--thread);color:#222;cursor:pointer}
+#mode{font-size:12px;opacity:.85;width:100%}
+nav{display:flex;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+nav button{flex:1;padding:12px;border:0;background:none;font:inherit;font-weight:600;color:var(--mut);cursor:pointer;border-bottom:3px solid transparent}
+nav button.on{color:var(--indigo);border-bottom-color:var(--indigo)}
+main{max-width:860px;margin:0 auto;padding:14px}
+section{display:none}section.on{display:block}
+.box{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:14px}
+h2{font-size:16px;margin:0 0 10px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row>label{flex:1;min-width:120px;font-size:13px;color:var(--mut)}
+input,select{width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:6px;margin-top:3px;color:var(--ink);background:#fff}
+button.p{background:var(--indigo);color:#fff;border:0;border-radius:6px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer;margin-top:10px}
+button.s{background:#fff;border:1px solid var(--line);border-radius:6px;padding:5px 10px;font:inherit;cursor:pointer}
+button.s.d{color:var(--bad)}
+.pv{margin-top:8px;font-size:14px;display:flex;gap:14px;flex-wrap:wrap}
+.pv span{padding:4px 10px;border-radius:14px;background:#eef1f6}
+.pv .no{background:#fbe9e7;color:var(--bad)}
+.item{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.item:first-child{border-top:0}
+.sw{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);flex:none}
+.grow{flex:1;min-width:150px}
+.sub{font-size:13px;color:var(--mut)}
+.tick{font-size:20px;font-weight:700;min-width:34px;text-align:center}
+.t-open{color:#bbb}.t-claim{color:var(--thread)}.t-done{color:var(--ok)}
+.badge{font-size:12px;padding:2px 8px;border-radius:10px;background:#eef1f6}
+.low{color:var(--bad);font-weight:700}
+.empty{color:var(--mut);padding:8px 0}
+.stock{display:flex;align-items:center;gap:6px;font-weight:700}
+</style></head><body>
+<header>
+  <h1>Bez Çanta · Stok ve Sipariş</h1>
+  <select id="who" title="Kullanıcı"></select>
+  <button id="addUser">+ Kullanıcı</button>
+  <div id="mode"></div>
+</header>
+<nav id="tabs">
+  <button data-t="orders" class="on">Siparişler</button>
+  <button data-t="fabrics">Kumaşlar ve stok</button>
+  <button data-t="designs">Tasarımlar</button>
+</nav>
+<main>
+<section id="orders" class="on">
+  <div class="box"><h2>Yeni sipariş</h2>
+    <div class="row">
+      <label>Müşteri / not<input id="oc" placeholder="Ayşe, Instagram siparişi"></label>
+      <label>Kumaş kodu<input id="of" inputmode="numeric" placeholder="101"></label>
+      <label>Tasarım no<input id="od" inputmode="numeric" placeholder="1"></label>
+      <label>Adet<input id="oq" type="number" min="1" value="1"></label>
+    </div>
+    <div class="pv" id="pv"></div>
+    <button class="p" id="addOrder">Siparişi ekle</button>
+  </div>
+  <div class="box"><div class="row" style="justify-content:space-between;align-items:center">
+    <h2 style="margin:0">Sipariş listesi</h2>
+    <select id="flt" style="width:auto"><option value="all">Tümü</option><option value="open">Bekleyen</option><option value="claimed">Yapılıyor</option><option value="done">Teslim edildi</option></select></div>
+    <div id="ol"></div></div>
+</section>
+<section id="fabrics">
+  <div class="box"><h2>Kumaş ekle veya güncelle</h2>
+    <div class="row">
+      <label>Kumaş kodu<input id="fc" inputmode="numeric" placeholder="100"></label>
+      <label>Kumaş adı / türü<input id="fn" placeholder="Keten, Gabardin..."></label>
+      <label>Renk<input id="fk" type="color" value="#c8b79a" style="padding:2px;height:38px"></label>
+      <label>Stok (adet)<input id="fs" type="number" min="0" value="0"></label>
+    </div>
+    <button class="p" id="addFabric">Kaydet</button>
+    <div class="sub" style="margin-top:6px">Aynı kodu tekrar kaydedersen kumaş güncellenir. Görseller sonraki sürümde eklenecek.</div>
+  </div>
+  <div class="box"><h2>Kumaşlar</h2><div id="fl"></div></div>
+</section>
+<section id="designs">
+  <div class="box"><h2>Tasarım ekle veya güncelle</h2>
+    <div class="row">
+      <label>Tasarım no<input id="dn" inputmode="numeric" placeholder="1"></label>
+      <label style="flex:3">Tasarım adı<input id="dm" placeholder="Omuz çantası, Alışveriş çantası..."></label>
+    </div>
+    <button class="p" id="addDesign">Kaydet</button>
+  </div>
+  <div class="box"><h2>Tasarımlar</h2><div id="dl"></div></div>
+</section>
+</main>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+// ===== AYAR: ekip ortak kullanımı için Firebase bilgilerini buraya yapıştır =====
+// Boş bırakırsan uygulama sadece bu tarayıcıda (yerel) çalışır.
+const FIREBASE_CONFIG = { apiKey:"", authDomain:"", projectId:"", appId:"" };
+// ================================================================================
+
+const CLOUD = !!FIREBASE_CONFIG.apiKey;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+const norm = d => ({fabrics:d.fabrics||[], designs:d.designs||[], orders:d.orders||[], users:d.users||[]});
+let S = norm({});
+let me = localStorage.getItem('me') || '';
+const fab = c => S.fabrics.find(f => f.code === String(c).trim());
+const des = c => S.designs.find(d => d.no === String(c).trim());
+const byNum = (a,b) => String(a).localeCompare(String(b), 'tr', {numeric:true});
+
+let mutate;
+if (CLOUD) {
+  firebase.initializeApp(FIREBASE_CONFIG);
+  const ref = firebase.firestore().collection('app').doc('state');
+  ref.onSnapshot(s => { S = norm(s.exists ? s.data() : {}); render(); },
+    e => alert('Bağlantı hatası: ' + e.message));
+  mutate = fn => firebase.firestore().runTransaction(async t => {
+    const s = await t.get(ref); const d = norm(s.exists ? s.data() : {}); fn(d); t.set(ref, d);
+  });
+  $('mode').textContent = 'Ortak mod: veriler tüm ekiple anlık paylaşılıyor.';
+} else {
+  try { S = norm(JSON.parse(localStorage.getItem('bezstok') || '{}')); } catch(e) {}
+  mutate = async fn => { const d = norm(JSON.parse(JSON.stringify(S))); fn(d); S = d; localStorage.setItem('bezstok', JSON.stringify(S)); render(); };
+  $('mode').textContent = 'Yerel mod: veriler sadece bu tarayıcıda. Ekip paylaşımı için Firebase ayarını yap.';
+}
+const act = async fn => { try { await mutate(fn); } catch(e) { alert(e.message || e); } };
+const needUser = () => { if (!me) { alert('Önce üstten kullanıcı seç veya ekle.'); return false; } return true; };
+
+// ---- Sekmeler
+$('tabs').onclick = e => { const t = e.target.dataset.t; if (!t) return;
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  document.querySelectorAll('section').forEach(s => s.classList.toggle('on', s.id === t)); };
+
+// ---- Kullanıcı
+$('who').onchange = e => { me = e.target.value; localStorage.setItem('me', me); render(); };
+$('addUser').onclick = async () => {
+  const n = (prompt('Kullanıcı adı:') || '').trim(); if (!n) return;
+  await act(d => { if (!d.users.includes(n)) d.users.push(n); });
+  me = n; localStorage.setItem('me', me); render();
+};
+
+// ---- Canlı önizleme (kod yazınca isim çıkar)
+function preview() {
+  const f = $('of').value.trim(), g = $('od').value.trim(); let h = '';
+  if (f) { const x = fab(f); h += x ? `<span>Kumaş: <b>${esc(x.name)}</b> · stok ${x.stock}</span>` : `<span class="no">Kumaş ${esc(f)} bulunamadı</span>`; }
+  if (g) { const x = des(g); h += x ? `<span>Tasarım: <b>${esc(x.name)}</b></span>` : `<span class="no">Tasarım ${esc(g)} bulunamadı</span>`; }
+  $('pv').innerHTML = h;
+}
+['of','od'].forEach(i => $(i).oninput = preview);
+
+// ---- Siparişler
+$('addOrder').onclick = () => {
+  if (!needUser()) return;
+  const f = $('of').value.trim(), g = $('od').value.trim(), q = parseInt($('oq').value, 10), c = $('oc').value.trim();
+  if (!fab(f)) return alert('Bu kumaş kodu kayıtlı değil. Önce "Kumaşlar ve stok" sayfasından ekle.');
+  if (!des(g)) return alert('Bu tasarım no kayıtlı değil. Önce "Tasarımlar" sayfasından ekle.');
+  if (!(q > 0)) return alert('Adet 1 veya daha fazla olmalı.');
+  act(d => d.orders.push({id:uid(), cust:c, fab:f, des:g, qty:q, status:'open', by:'', createdBy:me, at:Date.now()}));
+  $('oc').value = ''; $('of').value = ''; $('od').value = ''; $('oq').value = 1; preview();
+};
+$('flt').onchange = render;
+$('ol').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return; const id = b.dataset.id, a = b.dataset.a;
+  if (!needUser()) return;
+  act(d => {
+    const o = d.orders.find(x => x.id === id); if (!o) throw new Error('Sipariş bulunamadı.');
+    const f = d.fabrics.find(x => x.code === o.fab);
+    if (a === 'claim') {
+      if (o.status !== 'open') throw new Error('Bu sipariş az önce ' + o.by + ' tarafından alındı.');
+      if (f) { if (f.stock < o.qty) throw new Error('Stok yetersiz: ' + f.name + ' için ' + f.stock + ' adet var.'); f.stock -= o.qty; }
+      o.status = 'claimed'; o.by = me;
+    } else if (a === 'release') {
+      if (o.status !== 'claimed' || o.by !== me) throw new Error('Sadece siparişi alan kişi bırakabilir.');
+      if (f) f.stock += o.qty; o.status = 'open'; o.by = '';
+    } else if (a === 'done') {
+      if (o.status !== 'claimed' || o.by !== me) throw new Error('Sadece siparişi alan kişi teslim edebilir.');
+      o.status = 'done'; o.doneAt = Date.now();
+    } else if (a === 'del') {
+      if (o.status === 'claimed' && f) f.stock += o.qty;
+      if (!confirm('Sipariş silinsin mi?')) return; d.orders = d.orders.filter(x => x.id !== id);
+    }
+  });
+};
+function renderOrders() {
+  const flt = $('flt').value;
+  const list = S.orders.filter(o => flt === 'all' || o.status === flt).sort((a,b) => b.at - a.at);
+  $('ol').innerHTML = list.length ? list.map(o => {
+    const f = fab(o.fab), g = des(o.des), mine = o.by === me;
+    const tick = o.status === 'done' ? '<span class="tick t-done" title="Teslim edildi">✓✓</span>'
+      : o.status === 'claimed' ? '<span class="tick t-claim" title="Yapılıyor">✓</span>' : '<span class="tick t-open">○</span>';
+    let btns = '';
+    if (o.status === 'open') btns = `<button class="s" data-a="claim" data-id="${o.id}">Ben yapıyorum</button>`;
+    if (o.status === 'claimed' && mine) btns = `<button class="s" data-a="done" data-id="${o.id}">Teslim edildi</button><button class="s" data-a="release" data-id="${o.id}">Bırak</button>`;
+    const state = o.status === 'open' ? 'Bekliyor' : o.status === 'claimed' ? 'Yapıyor: ' + esc(o.by) : 'Teslim · ' + esc(o.by);
+    return `<div class="item">${tick}<span class="sw" style="background:${esc(f?.color || '#eee')}"></span>
+      <div class="grow"><b>${o.qty} × ${esc(g?.name || 'Tasarım ' + o.des)}</b> · ${esc(f?.name || 'Kumaş ' + o.fab)} <span class="sub">(${esc(o.fab)}/${esc(o.des)})</span>
+      <div class="sub">${esc(o.cust || '—')} · ${new Date(o.at).toLocaleDateString('tr-TR')} · ekleyen ${esc(o.createdBy)}</div></div>
+      <span class="badge">${state}</span>${btns}<button class="s d" data-a="del" data-id="${o.id}" title="Sil">✕</button></div>`;
+  }).join('') : '<div class="empty">Bu filtrede sipariş yok. Yukarıdan ilk siparişi ekle.</div>';
+}
+
+// ---- Kumaşlar
+$('addFabric').onclick = () => {
+  const code = $('fc').value.trim(), name = $('fn').value.trim(), stock = parseInt($('fs').value, 10) || 0;
+  if (!code || !name) return alert('Kumaş kodu ve adı gerekli.');
+  act(d => { const x = d.fabrics.find(f => f.code === code);
+    if (x) { x.name = name; x.color = $('fk').value; x.stock = stock; } else d.fabrics.push({code, name, color:$('fk').value, stock}); });
+  $('fc').value = ''; $('fn').value = ''; $('fs').value = 0;
+};
+$('fl').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return; const c = b.dataset.c, a = b.dataset.a;
+  if (a === 'edit') { const f = fab(c); $('fc').value = f.code; $('fn').value = f.name; $('fk').value = f.color; $('fs').value = f.stock; window.scrollTo(0,0); return; }
+  if (a === 'del' && !confirm('Kumaş silinsin mi?')) return;
+  act(d => { const f = d.fabrics.find(x => x.code === c); if (!f) return;
+    if (a === 'inc') f.stock++; if (a === 'dec') f.stock = Math.max(0, f.stock - 1);
+    if (a === 'del') d.fabrics = d.fabrics.filter(x => x.code !== c); });
+};
+function renderFabrics() {
+  $('fl').innerHTML = S.fabrics.length ? [...S.fabrics].sort((a,b) => byNum(a.code,b.code)).map(f => {
+    const need = S.orders.filter(o => o.status === 'open' && o.fab === f.code).reduce((s,o) => s + o.qty, 0);
+    return `<div class="item"><span class="sw" style="background:${esc(f.color)}"></span>
+      <div class="grow"><b>${esc(f.code)}</b> · ${esc(f.name)}<div class="sub">Bekleyen siparişlerin ihtiyacı: <span class="${need > f.stock ? 'low' : ''}">${need}</span> adet</div></div>
+      <div class="stock"><button class="s" data-a="dec" data-c="${esc(f.code)}">−</button><span class="${f.stock <= 3 ? 'low' : ''}">${f.stock}</span><button class="s" data-a="inc" data-c="${esc(f.code)}">+</button></div>
+      <button class="s" data-a="edit" data-c="${esc(f.code)}">Düzenle</button><button class="s d" data-a="del" data-c="${esc(f.code)}">✕</button></div>`;
+  }).join('') : '<div class="empty">Henüz kumaş yok. Yukarıdan 100 numaralı ilk kumaşı ekle.</div>';
+}
+
+// ---- Tasarımlar
+$('addDesign').onclick = () => {
+  const no = $('dn').value.trim(), name = $('dm').value.trim();
+  if (!no || !name) return alert('Tasarım no ve adı gerekli.');
+  act(d => { const x = d.designs.find(g => g.no === no); if (x) x.name = name; else d.designs.push({no, name}); });
+  $('dn').value = ''; $('dm').value = '';
+};
+$('dl').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return; const n = b.dataset.n;
+  if (b.dataset.a === 'edit') { const g = des(n); $('dn').value = g.no; $('dm').value = g.name; window.scrollTo(0,0); return; }
+  if (!confirm('Tasarım silinsin mi?')) return;
+  act(d => { d.designs = d.designs.filter(x => x.no !== n); });
+};
+function renderDesigns() {
+  $('dl').innerHTML = S.designs.length ? [...S.designs].sort((a,b) => byNum(a.no,b.no)).map(g =>
+    `<div class="item"><div class="grow"><b>${esc(g.no)}</b> · ${esc(g.name)}</div>
+     <button class="s" data-a="edit" data-n="${esc(g.no)}">Düzenle</button><button class="s d" data-a="del" data-n="${esc(g.no)}">✕</button></div>`
+  ).join('') : '<div class="empty">Henüz tasarım yok. Yukarıdan 1 numaralı tasarımı ekle.</div>';
+}
+
+function render() {
+  $('who').innerHTML = '<option value="">Kullanıcı seç…</option>' + S.users.map(u => `<option ${u === me ? 'selected' : ''}>${esc(u)}</option>`).join('');
+  renderOrders(); renderFabrics(); renderDesigns(); preview();
+}
+render();
+</script>
+</body></html>
